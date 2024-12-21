@@ -1,0 +1,91 @@
+from itertools import combinations
+
+import numpy as np
+from matplotlib import pyplot as plt
+from sklearn.datasets import load_iris
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+from TSNE import graficar_TSNE
+from model.model import model
+from neural_network_propagation.predict import predict
+
+# Función para inicializar datos
+def initialize_data():
+    iris = load_iris()
+    X = iris.data
+    y = iris.target.reshape(-1, 1)
+
+    # Visualización con t-SNE
+    graficar_TSNE(X, y, iris)
+
+    # One-hot encoding
+    encoder = OneHotEncoder(sparse_output=False)
+    y_onehot = encoder.fit_transform(y)
+
+    # Dividir en conjuntos de entrenamiento, validación y prueba
+    X_train, X_test, y_train, y_test = train_test_split(X, y_onehot, test_size=0.3, random_state=156477)
+    X_train_2, X_val, y_train_2, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=15477)
+
+    return X_train, X_test, y_train, y_test, X_train_2, X_val, y_train_2, y_val
+
+# Función principal
+def train_and_evaluate(X_train_2, X_val, y_train_2, y_val):
+    # Inicializar datos
+
+    # Configuración de hiperparámetros
+    layers_dims = [X_train_2.shape[1], 16, 12, 8, 3]
+    learning_rates = [0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]
+    batches = [8, 16, 32]
+    optimizers = ['Adam', 'Estocastic']
+    resultados = {}
+
+    # Entrenamiento y evaluación
+    for optimizer in optimizers:
+        for learning_rate in learning_rates:
+            for batch in batches:
+                print(f'------------------------\n')
+                print(f'OPTIMIZADOR: {optimizer}    LEARNING_RATE: {learning_rate}    Nº BATCHES: {batch}')
+                parameters = model(
+                    X_train_2, y_train_2, layers_dims,
+                    optimizer_use=optimizer,
+                    learning_rate=learning_rate,
+                    num_epochs=10000,
+                    batch_size=batch
+                )
+                predictions, accuracy = predict(X_val, parameters, y_val)
+                resultados[(optimizer, learning_rate, batch)] = accuracy
+                print(f'La exactitud para optimizador {optimizer} con learning rate {learning_rate} y nº batches {batch} es de: {accuracy*100:.6f} %')
+                print(f'------------------------\n')
+
+    claves_ordenadas = sorted(resultados.keys(), key=lambda k: resultados[k], reverse=True)
+    print("Claves ordenadas según el tamaño del valor:")
+    for clave in claves_ordenadas:
+        print(f"{clave}: {resultados[clave]:.4f}")
+
+    return claves_ordenadas[0]
+
+def model_test(combination, layers_dims, X_train, X_test, y_train, y_test):
+
+    parameters = model(X_train, y_train, layers_dims, optimizer_use=combination[0], learning_rate=combination[1], batch_size=combination[2], num_epochs=10000)
+    predictions, accuracy = predict(X_test, parameters, y_test)
+    print(f'Las predicciones son: {predictions}')
+    print(f'La exactitud es de: {accuracy * 100:.2f} %')
+    y_test_labels = np.argmax(y_test, axis=1)
+
+    cm = confusion_matrix(y_test_labels, predictions)
+
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=load_iris().target_names)
+    disp.plot()
+    plt.title("Confusion Matrix")
+    plt.grid(False)
+    plt.show()
+    print(f'------------------------\n')
+
+
+# Punto de entrada
+if __name__ == "__main__":
+    X_train, X_test, y_train, y_test, X_train_2, X_val, y_train_2, y_val = initialize_data()
+
+    combination = train_and_evaluate(X_train_2, X_val, y_train_2, y_val)
+    model_test(combination, [X_train_2.shape[1], 16, 12, 8, 3], X_train, X_test, y_train, y_val)
