@@ -59,7 +59,7 @@ def model_train_and_validation(layers_dims, learning_rates, batches, X_train_2, 
     for clave in claves_ordenadas:
         print(f"{clave}: {resultados[clave]:.4f}")
 
-    return claves_ordenadas[0]
+    return claves_ordenadas[:11]
 
 def model_test(combination, X_train, X_test, y_train, y_test):
     parameters = model(
@@ -70,7 +70,8 @@ def model_test(combination, X_train, X_test, y_train, y_test):
         batch_size=combination[2]
         )
     predictions, accuracy = predict(parameters, X_test, y_test)
-    print(f'Las predicciones son: {predictions}')
+    print(f'------------------------\n')
+    print(f'\nLas predicciones son: {predictions}')
     print(f'La exactitud es de: {accuracy * 100:.2f} %')
     y_test_labels = np.argmax(y_test, axis=1)
 
@@ -81,16 +82,18 @@ def model_test(combination, X_train, X_test, y_train, y_test):
     plt.title("Confusion Matrix")
     plt.grid(False)
     plt.show()
-    print(f'------------------------\n')
 
 
 # Punto de entrada
 if __name__ == "__main__":
     X_train, X_test, y_train, y_test, X_train_2, X_val, y_train_2, y_val = initialize_data()
     layers_dims = [(X_train_2.shape[1], 16, 12, 8, 3), (X_train_2.shape[1], 16, 6, 3), (X_train_2.shape[1], 16, 18, 16, 8, 3)]
-    learning_rates = [0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]
-    learning_rates = [0.0001, 0.00005, 0.00001]
+    learning_rates = [0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]
     batches = [8, 16, 32]
-    batches = [32]
-    combination = model_train_and_validation(layers_dims, learning_rates, batches, X_train_2, X_val, y_train_2, y_val)
-    model_test(combination, X_train, X_test, y_train, y_test)
+    layers_dims = [(X_train_2.shape[1], 16, 12, 8, 3)]
+    learning_rates = [0.5, 0.001]
+    batches = [8]
+
+    combinations = model_train_and_validation(layers_dims, learning_rates, batches, X_train_2, X_val, y_train_2, y_val)
+    for combination in combinations:
+        model_test(combination, X_train, X_test, y_train, y_test)
