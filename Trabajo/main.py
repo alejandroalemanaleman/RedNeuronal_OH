@@ -1,4 +1,4 @@
-from itertools import combinations
+from itertools import combinations, product
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -35,24 +35,25 @@ def model_train_and_validation(layers_dims, learning_rates, batches, X_train_2, 
     optimizers = ['Adam', 'Estocastic']
     resultados = {}
 
-    for layer_dim in layers_dims:
-        for optimizer in optimizers:
-            for learning_rate in learning_rates:
-                for batch in batches:
-                    print(f'------------------------\n')
-                    print(f'OPTIMIZADOR: {optimizer}    LEARNING_RATE: {learning_rate}    Nº BATCHES: {batch}    ESTRUCTURA CAPAS: {layer_dim}')
-                    parameters = model(
-                        X_train_2, y_train_2, layer_dim,
-                        optimizer_use=optimizer,
-                        learning_rate=learning_rate,
-                        num_epochs=10000,
-                        batch_size=batch,
-                        print_cost=True
-                    )
-                    predictions, accuracy = predict(parameters, X_val, y_val)
-                    resultados[(optimizer, learning_rate, batch, layer_dim)] = accuracy
-                    print(f'La exactitud para optimizador {optimizer} con learning rate {learning_rate}, nº batches {batch} y estructura de capas {layer_dim}\nes de: {accuracy*100:.6f} %')
-                    print(f'------------------------\n')
+    combinaciones = product(layers_dims, optimizers, learning_rates, batches)
+
+    for layer_dim, optimizer, learning_rate, batch in combinaciones:
+        print(f'------------------------\n')
+        print(
+            f'OPTIMIZADOR: {optimizer}    LEARNING_RATE: {learning_rate}    Nº BATCHES: {batch}    ESTRUCTURA CAPAS: {layer_dim}')
+        parameters = model(
+            X_train_2, y_train_2, layer_dim,
+            optimizer_use=optimizer,
+            learning_rate=learning_rate,
+            num_epochs=10000,
+            batch_size=batch,
+            print_cost=True
+        )
+        predictions, accuracy = predict(parameters, X_val, y_val)
+        resultados[(optimizer, learning_rate, batch, layer_dim)] = accuracy
+        print(
+            f'La exactitud para optimizador {optimizer} con learning rate {learning_rate}, nº batches {batch} y estructura de capas {layer_dim}\nes de: {accuracy * 100:.6f} %')
+        print(f'------------------------\n')
 
     claves_ordenadas = sorted(resultados.keys(), key=lambda k: resultados[k], reverse=True)
     print("Claves ordenadas según el tamaño del valor:")
