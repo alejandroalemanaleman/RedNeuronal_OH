@@ -1,14 +1,14 @@
-from itertools import combinations, product
-
-import numpy as np
+from itertools import product
 from matplotlib import pyplot as plt
 from sklearn.datasets import load_iris
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
-from TSNE import graficar_TSNE
+from Trabajo.data_representation.TSNE import graficar_TSNE
 from model.model import model
 from neural_network_propagation.predict import predict
+import numpy as np
+
 
 # Función para inicializar datos
 def initialize_data():
@@ -91,9 +91,7 @@ if __name__ == "__main__":
     layers_dims = [(X_train_2.shape[1], 16, 12, 8, 3), (X_train_2.shape[1], 16, 6, 3), (X_train_2.shape[1], 16, 18, 16, 8, 3)]
     learning_rates = [0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001]
     batches = [8, 16, 32]
-    layers_dims = [(X_train_2.shape[1], 16, 12, 8, 3)]
-    learning_rates = [0.5, 0.001]
-    batches = [8]
+
 
     combinations = model_train_and_validation(layers_dims, learning_rates, batches, X_train_2, X_val, y_train_2, y_val)
     for combination in combinations:
