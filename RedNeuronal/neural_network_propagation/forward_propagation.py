@@ -3,18 +3,16 @@ from RedNeuronal.activation_functions.relu import relu
 from RedNeuronal.activation_functions.softmax import softmax
 
 def forward_propagation(X, parameters):
-    """
-    Realiza la propagación hacia adelante para cualquier número de capas.
-    """
-    L = len(parameters) // 2  # Número de capas (W, b cuentan como dos claves por capa)
+
+    L = len(parameters) // 2
     cache = {'A0': X}
 
     A = X
     for l in range(1, L + 1):
         Z = np.dot(A, parameters[f'W{l}']) + parameters[f'b{l}']
-        if l == L:  # Última capa: Softmax
+        if l == L:
             A = softmax(Z)
-        else:  # Capas ocultas: ReLU
+        else:
             A = relu(Z)
         cache[f'Z{l}'] = Z
         cache[f'A{l}'] = A

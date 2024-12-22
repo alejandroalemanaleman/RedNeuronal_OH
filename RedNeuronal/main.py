@@ -10,26 +10,21 @@ from neural_network_propagation.predict import predict
 import numpy as np
 
 
-# Función para inicializar datos
 def initialize_data():
     iris = load_iris()
     X = iris.data
     y = iris.target.reshape(-1, 1)
 
-    # Visualización con t-SNE
     graficar_TSNE(X, y, iris)
 
-    # One-hot encoding
     encoder = OneHotEncoder(sparse_output=False)
     y_onehot = encoder.fit_transform(y)
 
-    # Dividir en conjuntos de entrenamiento, validación y prueba
     X_train, X_test, y_train, y_test = train_test_split(X, y_onehot, test_size=0.3, random_state=156477)
     X_train_2, X_val, y_train_2, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=15477)
 
     return X_train, X_test, y_train, y_test, X_train_2, X_val, y_train_2, y_val
 
-# Función principal
 def model_train_and_validation(layers_dims, learning_rates, batches, X_train_2, X_val, y_train_2, y_val):
 
     optimizers = ['Adam', 'Estocastic']
@@ -85,7 +80,8 @@ def model_test(combination, X_train, X_test, y_train, y_test):
     plt.show()
 
 
-# Punto de entrada
+
+
 if __name__ == "__main__":
     X_train, X_test, y_train, y_test, X_train_2, X_val, y_train_2, y_val = initialize_data()
     layers_dims = [(X_train_2.shape[1], 16, 12, 8, 3), (X_train_2.shape[1], 16, 6, 3), (X_train_2.shape[1], 16, 18, 16, 8, 3)]

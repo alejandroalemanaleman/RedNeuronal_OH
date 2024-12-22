@@ -2,9 +2,7 @@ import numpy as np
 
 
 def random_initialization(layers_dims):
-    """
-    Inicializa los parámetros para cualquier número de capas.
-    """
+
     parameters = {}
     L = len(layers_dims)
 

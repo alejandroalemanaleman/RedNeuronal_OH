@@ -2,9 +2,7 @@ import numpy as np
 
 
 def create_batches(X, Y, batch_size):
-    """
-    Divide los datos en lotes (batches) de tamaño batch_size.
-    """
+
     m = X.shape[0]
     indices = np.random.permutation(m)
     X_shuffled = X[indices]
