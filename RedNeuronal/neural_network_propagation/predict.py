@@ -1,5 +1,5 @@
 import numpy as np
-from Trabajo.neural_network_propagation import forward_propagation
+from RedNeuronal.neural_network_propagation import forward_propagation
 from sklearn.metrics import accuracy_score
 
 def predict(parameters, X_test, y_test):

@@ -1,6 +1,6 @@
 import numpy as np
-from Trabajo.activation_functions.relu import relu
-from Trabajo.activation_functions.softmax import softmax
+from RedNeuronal.activation_functions.relu import relu
+from RedNeuronal.activation_functions.softmax import softmax
 
 def forward_propagation(X, parameters):
     """

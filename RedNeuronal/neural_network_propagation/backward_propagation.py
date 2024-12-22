@@ -1,5 +1,5 @@
 import numpy as np
-from Trabajo.activation_functions.relu import relu_derivative
+from RedNeuronal.activation_functions.relu import relu_derivative
 
 def backward_propagation(X, y, cache, parameters):
     """

@@ -1,10 +1,10 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from Trabajo.neural_network_propagation import *
-from Trabajo.optimizers import *
-from Trabajo.batches import *
-from Trabajo.loss_functions import *
+from RedNeuronal.neural_network_propagation import *
+from RedNeuronal.optimizers import *
+from RedNeuronal.batches import *
+from RedNeuronal.loss_functions import *
 
 def model(X, Y, layers_dims, learning_rate=0.01, num_epochs=500, batch_size=32, optimizer_use="Adam", print_cost=False):
     """

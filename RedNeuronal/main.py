@@ -4,7 +4,7 @@ from sklearn.datasets import load_iris
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
-from Trabajo.data_representation.TSNE import graficar_TSNE
+from RedNeuronal.data_representation.TSNE import graficar_TSNE
 from model.model import model
 from neural_network_propagation.predict import predict
 import numpy as np
