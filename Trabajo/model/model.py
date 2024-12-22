@@ -6,7 +6,7 @@ from Trabajo.optimizers import *
 from Trabajo.batches import *
 from Trabajo.loss_functions import *
 
-def model(X, Y, layers_dims, learning_rate=0.01, num_epochs=500, batch_size=32, optimizer_use="Adam"):
+def model(X, Y, layers_dims, learning_rate=0.01, num_epochs=500, batch_size=32, optimizer_use="Adam", print_cost=False):
     """
     Entrena el modelo utilizando mini-batches.
     """
@@ -40,7 +40,7 @@ def model(X, Y, layers_dims, learning_rate=0.01, num_epochs=500, batch_size=32, 
                 parameters = optimizer.update(parameters, grads)
 
         # Imprimir y registrar costos periódicamente
-        if i % 1000 == 0:
+        if print_cost and i % 1000 == 0:
             print(f"Costo tras epoch {i}: {cost:.6f}")
         if i % 100 == 0:
             costs.append(cost)

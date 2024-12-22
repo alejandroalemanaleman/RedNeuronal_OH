@@ -30,33 +30,29 @@ def initialize_data():
     return X_train, X_test, y_train, y_test, X_train_2, X_val, y_train_2, y_val
 
 # Función principal
-def train_and_evaluate(X_train_2, X_val, y_train_2, y_val):
-    # Inicializar datos
+def model_train_and_validation(layers_dims, learning_rates, batches, X_train_2, X_val, y_train_2, y_val):
 
-    # Configuración de hiperparámetros
-    layers_dims = [X_train_2.shape[1], 16, 12, 8, 3]
-    learning_rates = [0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]
-    batches = [8, 16, 32]
     optimizers = ['Adam', 'Estocastic']
     resultados = {}
 
-    # Entrenamiento y evaluación
-    for optimizer in optimizers:
-        for learning_rate in learning_rates:
-            for batch in batches:
-                print(f'------------------------\n')
-                print(f'OPTIMIZADOR: {optimizer}    LEARNING_RATE: {learning_rate}    Nº BATCHES: {batch}')
-                parameters = model(
-                    X_train_2, y_train_2, layers_dims,
-                    optimizer_use=optimizer,
-                    learning_rate=learning_rate,
-                    num_epochs=10000,
-                    batch_size=batch
-                )
-                predictions, accuracy = predict(X_val, parameters, y_val)
-                resultados[(optimizer, learning_rate, batch)] = accuracy
-                print(f'La exactitud para optimizador {optimizer} con learning rate {learning_rate} y nº batches {batch} es de: {accuracy*100:.6f} %')
-                print(f'------------------------\n')
+    for layer_dim in layers_dims:
+        for optimizer in optimizers:
+            for learning_rate in learning_rates:
+                for batch in batches:
+                    print(f'------------------------\n')
+                    print(f'OPTIMIZADOR: {optimizer}    LEARNING_RATE: {learning_rate}    Nº BATCHES: {batch}    ESTRUCTURA CAPAS: {layer_dim}')
+                    parameters = model(
+                        X_train_2, y_train_2, layer_dim,
+                        optimizer_use=optimizer,
+                        learning_rate=learning_rate,
+                        num_epochs=10000,
+                        batch_size=batch,
+                        print_cost=True
+                    )
+                    predictions, accuracy = predict(parameters, X_val, y_val)
+                    resultados[(optimizer, learning_rate, batch, layer_dim)] = accuracy
+                    print(f'La exactitud para optimizador {optimizer} con learning rate {learning_rate}, nº batches {batch} y estructura de capas {layer_dim}\nes de: {accuracy*100:.6f} %')
+                    print(f'------------------------\n')
 
     claves_ordenadas = sorted(resultados.keys(), key=lambda k: resultados[k], reverse=True)
     print("Claves ordenadas según el tamaño del valor:")
@@ -65,10 +61,15 @@ def train_and_evaluate(X_train_2, X_val, y_train_2, y_val):
 
     return claves_ordenadas[0]
 
-def model_test(combination, layers_dims, X_train, X_test, y_train, y_test):
-
-    parameters = model(X_train, y_train, layers_dims, optimizer_use=combination[0], learning_rate=combination[1], batch_size=combination[2], num_epochs=10000)
-    predictions, accuracy = predict(X_test, parameters, y_test)
+def model_test(combination, X_train, X_test, y_train, y_test):
+    parameters = model(
+        X_train, y_train, combination[-1],
+        optimizer_use=combination[0],
+        learning_rate=combination[1],
+        num_epochs=10000,
+        batch_size=combination[2]
+        )
+    predictions, accuracy = predict(parameters, X_test, y_test)
     print(f'Las predicciones son: {predictions}')
     print(f'La exactitud es de: {accuracy * 100:.2f} %')
     y_test_labels = np.argmax(y_test, axis=1)
@@ -86,6 +87,10 @@ def model_test(combination, layers_dims, X_train, X_test, y_train, y_test):
 # Punto de entrada
 if __name__ == "__main__":
     X_train, X_test, y_train, y_test, X_train_2, X_val, y_train_2, y_val = initialize_data()
-
-    combination = train_and_evaluate(X_train_2, X_val, y_train_2, y_val)
-    model_test(combination, [X_train_2.shape[1], 16, 12, 8, 3], X_train, X_test, y_train, y_val)
+    layers_dims = [(X_train_2.shape[1], 16, 12, 8, 3), (X_train_2.shape[1], 16, 6, 3), (X_train_2.shape[1], 16, 18, 16, 8, 3)]
+    learning_rates = [0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001, 0.00005, 0.00001]
+    learning_rates = [0.0001, 0.00005, 0.00001]
+    batches = [8, 16, 32]
+    batches = [32]
+    combination = model_train_and_validation(layers_dims, learning_rates, batches, X_train_2, X_val, y_train_2, y_val)
+    model_test(combination, X_train, X_test, y_train, y_test)
